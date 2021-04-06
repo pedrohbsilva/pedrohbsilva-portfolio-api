@@ -1,37 +1,41 @@
-# This is a basic workflow to help you get started with Actions
-
 name: pedrohbsilva-portfolio-api-CI
 
-# Controls when the action will run.
 on:
-  # Triggers the workflow on push or pull request events but only for the main branch
   push:
     branches: [ main ]
 
 jobs:
- build:
-runs-on: ubuntu-latest
+  build:
 
-steps:
- — uses: actions/checkout@v2
- — name: Use Node.js ${{ matrix.node-version }}
- uses: actions/setup-node@v1
- with:
- node-version: ${{ matrix.node-version }}
- — run: yarn add ci
- — run: yarn build
- — name: Login to Heroku Container registry
- env:
- HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
- run: heroku container:login
- — name: Build and push
- env:
- HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
- run: docker build -f Dockerfile.prod -t registry.heroku.com/thawing-waters-16124/web .
- — name: Release
- env:
- HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
- run: docker push registry.heroku.com/thawing-waters-16124/web:latest
- env:
- HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
- run: heroku container:release web --app thawing-waters-16124
+    runs-on: ubuntu-latest
+
+    strategy:
+      matrix:
+        node-version: [10.x, 12.x, 14.x, 15.x]
+        # iSee supported Node.js release schedule at https://nodejs.org/en/about/releases/
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v1
+      with:
+        node-version: ${{ matrix.node-version }}
+    - run: yarn add ci
+    - run: yarn build
+    - run: yarn start
+    - name: Login to Heroku Container registry
+      env:
+        HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+      run: heroku container:login
+    - name: Registry
+      env:
+        HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+      run: docker build -f Dockerfile.prod -t registry.heroku.com/thawing-waters-16124/web .
+    - name: Build and push
+      env:
+        HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+      run: docker push registry.heroku.com/thawing-waters-16124/web:latest
+    - name: Release
+      env:
+        HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+      run: heroku container:release web --app thawing-waters-16124
