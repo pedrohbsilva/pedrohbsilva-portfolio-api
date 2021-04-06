@@ -2,12 +2,12 @@
 
 name: pedrohbsilva-portfolio-api-CI
 
-# Controls when the action will run. 
+# Controls when the action will run.
 on:
   # Triggers the workflow on push or pull request events but only for the main branch
   push:
     branches: [ main ]
-  
+
 jobs:
  build:
 runs-on: ubuntu-latest
@@ -29,10 +29,13 @@ steps:
  HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
  run: heroku container:login
  — name: Build and push
- env: 
+ env:
  HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
- run: heroku container:push -a thawing-waters-16124 web
+ run: docker build -f Dockerfile.prod -t registry.heroku.com/thawing-waters-16124/web .
  — name: Release
- env: 
+ env:
  HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
- run: heroku container:release -a thawing-waters-16124 web
+ run: docker push registry.heroku.com/thawing-waters-16124/web:latest
+ env:
+ HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+ run: heroku container:release web --app thawing-waters-16124
