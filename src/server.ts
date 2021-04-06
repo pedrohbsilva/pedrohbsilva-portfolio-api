@@ -12,7 +12,7 @@ app.use(BodyParser.json());
 app.use(BodyParser.urlencoded({ extended: true }));
 
 app.get('/', (request, response) => {
-  return response.status(200).json({ message: 'teste' });
+  return response.status(200).json({ message: 'hoje' });
 });
 
 app.listen({ port: process.env.PORT || 3333 }, () =>
