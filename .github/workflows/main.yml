@@ -22,7 +22,6 @@ jobs:
         node-version: ${{ matrix.node-version }}
     - run: yarn add ci
     - run: yarn build
-    - run: yarn start
     - name: Login to Heroku Container registry
       env:
         HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
